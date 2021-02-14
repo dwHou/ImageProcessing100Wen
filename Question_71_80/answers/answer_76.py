@@ -8,6 +8,8 @@ def BGR2GRAY(img):
 	gray = 0.2126 * img[..., 2] + 0.7152 * img[..., 1] + 0.0722 * img[..., 0]
 	return gray
 
+
+'''
 # Bi-Linear interpolation
 def bl_interpolate(img, ax=1., ay=1.):
 	if len(img.shape) > 2:
@@ -68,6 +70,31 @@ def make_pyramid(gray):
 		pyramid.append(p.astype(np.float32))
 
 	return pyramid
+'''
+
+
+def make_pyramid(gray):
+    # first element
+    pyramid = [gray]
+    # each scale
+    x, y = gray.shape[0:2]
+
+    for i in range(1, 6):
+        # define scale
+        a = 2. ** i
+	
+        # down scale
+        # p = bl_interpolate(gray, ax=1. / a, ay=1. / a)
+        p = cv2.resize(gray, (int(y / a), int(x / a)) , interpolation=cv2.INTER_LINEAR)
+
+        # up scale
+        # p = bl_interpolate(p, ax=a, ay=a)
+        p = cv2.resize(p, (y, x) , interpolation=cv2.INTER_LINEAR)
+
+        # add pyramid list
+        pyramid.append(p.astype(np.float32))
+
+    return pyramid
 
 # make saliency map
 def saliency_map(pyramid):
